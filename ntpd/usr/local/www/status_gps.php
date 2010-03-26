@@ -60,8 +60,8 @@ table.satsig TD {
   <tr><td class="tabnavtbl">
   <ul id="tabnav">
 <?php
-   	$tabs = array('NTP Server' => 'ntp_status.php',
-           		  'GPS Information' => 'gps_status.php');
+   	$tabs = array('NTP Server' => 'status_ntp.php',
+           		  'GPS Information' => 'status_gps.php');
 	dynamic_tab_menu($tabs);
 ?> 
  </ul>
@@ -190,7 +190,7 @@ table.satsig TD {
 	</td>
   </tr>
 </table>		
-<script type='text/javascript' src='gps_status_vals.php' defer='defer' ></script>
+<script type='text/javascript' src='status_gps_vals.php' defer='defer' ></script>
 </body>
 <?php
 echo(str_repeat(' ',4096));

@@ -47,8 +47,8 @@ pre {
   <tr><td class="tabnavtbl">
   <ul id="tabnav">
 <?php 
-   	$tabs = array('NTP Server' => 'ntp_status.php',
-           		  'GPS Information' => 'gps_status.php');
+   	$tabs = array('NTP Server' => 'status_ntp.php',
+           		  'GPS Information' => 'status_gps.php');
 	dynamic_tab_menu($tabs);
 ?> 
   </ul>

@@ -162,7 +162,7 @@ $menu['Status']['Interfaces']		= array('status_interfaces.php');
 
 $menu['Status']['Traffic graph']	= array('status_graph.php');
 $menu['Status']['Wireless']			= array('status_wireless.php');
-$menu['Status']['NTP Server']		= array('ntp_status.php');
+$menu['Status']['NTP Server']		= array('status_ntp.php');
 if (isset($config['captiveportal']['enable'])) {
 	$menu['Status']['Captive portal']	= array('status_captiveportal.php');
 }

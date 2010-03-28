@@ -1,8 +1,6 @@
 #!/usr/local/bin/php
 <?php
-$pgtitle = array("Diagnostics", "GPS Information");
-
-
+$pgtitle = array("Diagnostics", "GPS " . $_GET['gps'] . " Info");
 require("guiconfig.inc");
 include("fbegin.inc"); 
 
@@ -60,9 +58,14 @@ table.satsig TD {
   <tr><td class="tabnavtbl">
   <ul id="tabnav">
 <?php
-   	$tabs = array('NTP Server' => 'status_ntp.php',
-           		  'GPS Information' => 'status_gps.php');
+		$tabs = array('NTP Server' => 'status_ntp.php');
+		for ($r=0; $r<$_GET['tot']; $r++){
+			$gpstitle = 'GPS ' . $r . ' Info';
+			$tabs[$gpstitle] = 'status_gps.php?gps=' . $r . '&tot=' . $_GET['tot'];
+		}
+
 	dynamic_tab_menu($tabs);
+
 ?> 
  </ul>
   </td></tr>
@@ -190,7 +193,7 @@ table.satsig TD {
 	</td>
   </tr>
 </table>		
-<script type='text/javascript' src='status_gps_vals.php' defer='defer' ></script>
+<script type='text/javascript' src='status_gps_vals.php?gps=<?php $_GET['gps'] ?>' defer='defer' ></script>
 </body>
 <?php
 echo(str_repeat(' ',4096));

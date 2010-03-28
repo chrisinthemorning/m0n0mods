@@ -1,7 +1,7 @@
 #!/usr/local/bin/php
 <?php
 
-$fp = @fopen("/dev/gps0","r");
+$fp = @fopen("/dev/gps" . $_GET['gps'],"r");
 
 $line=str_repeat('Unknown,',20);
 $gpgga=split(",",$line);

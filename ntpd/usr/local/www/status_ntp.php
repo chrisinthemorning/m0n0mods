@@ -46,9 +46,20 @@ pre {
 <table width="100%" border="0" cellpadding="0" cellspacing="0" summary="tab pane">
   <tr><td class="tabnavtbl">
   <ul id="tabnav">
-<?php 
-   	$tabs = array('NTP Server' => 'status_ntp.php',
-           		  'GPS Information' => 'status_gps.php');
+  
+<?php	
+	$tabs = array('NTP Server' => 'status_ntp.php');
+	exec("/usr/bin/ntpq -c 'lpeers'",$peerlist);
+	$i=0;
+	foreach($peerlist as $peerline){
+		if (substr($peerline,1,8) == 'GPS_NMEA') {
+			$i++;
+		}
+		for ($r=0; $r<$i; $r++){
+			$gpstitle = 'GPS ' . $r . ' Info';
+			$tabs[$gpstitle] = 'status_gps.php?gps=' . $r . '&tot=' . $i;
+		}
+	}
 	dynamic_tab_menu($tabs);
 ?> 
   </ul>
@@ -62,7 +73,6 @@ pre {
 		<td width="22%" class="vncellt">Data</td> 
 		<td width="78%"  class="listr"><pre><?php
 	
-	exec("/usr/bin/ntpq -c 'lpeers'",$peerlist);
 	foreach($peerlist as $peerline){
 		echo htmlspecialchars($peerline,ENT_NOQUOTES) . '<br>';
 	}

@@ -148,7 +148,7 @@ $menu['Services']['Captive portal'] = array('services_captiveportal.php',
 			                  				'services_captiveportal_users.php',
 							  				'services_captiveportal_elementmanager.php');
 $menu['Services']['Wake on LAN']  	= array('services_wol.php');
-$menu['Services']['NTP Server']  	= array('services_ntp.php');
+$menu['Services']['NTP server']  	= array('services_ntp.php');
 
 $menu['VPN']['IPsec']  				= array('vpn_ipsec.php',
 											'vpn_ipsec_mobile.php',
@@ -162,7 +162,7 @@ $menu['Status']['Interfaces']		= array('status_interfaces.php');
 
 $menu['Status']['Traffic graph']	= array('status_graph.php');
 $menu['Status']['Wireless']			= array('status_wireless.php');
-$menu['Status']['NTP Server']		= array('status_ntp.php');
+$menu['Status']['NTP server']		= array('status_ntp.php');
 if (isset($config['captiveportal']['enable'])) {
 	$menu['Status']['Captive portal']	= array('status_captiveportal.php');
 }

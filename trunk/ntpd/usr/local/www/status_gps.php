@@ -57,18 +57,20 @@ table.satsig TD {
 <table width="100%" border="0" cellpadding="0" cellspacing="0" summary="tab pane">
   <tr><td class="tabnavtbl">
   <ul id="tabnav">
+<li class="tabinact1"><a href="status_ntp.php">NTP Server</a></li>
 <?php
-		$tabs = array('NTP Server' => 'status_ntp.php');
-		for ($r=0; $r<$_GET['tot']; $r++){
-			$gpstitle = 'GPS ' . $r . ' Info';
-			$tabs[$gpstitle] = 'status_gps.php?gps=' . $r . '&tot=' . $_GET['tot'];
+	for ($r=0; $r<$_GET['tot']; $r++){
+		$gpstitle = 'GPS ' . $r . ' Info';
+		$gpsurl = 'status_gps.php?gps=' . $r . '&tot=' . $_GET['tot'];
+		if ($r == $_GET['gps']) { ?>
+		<li class="tabact"><?=$gpstitle?></li><?php
+		} else {
+		?><li class="tabinact"><a href="<?=$gpsurl?>"><?=$gpstitle?></a></li><?php 
 		}
-
-	dynamic_tab_menu($tabs);
-
+	}
 ?> 
  </ul>
-  </td></tr>
+ </td></tr>
   <tr> 
     <td class="tabcont">
 	<table id="gpsdata" width="100%" border="0" cellspacing="0" cellpadding="0" summary="content pane"> 
@@ -193,7 +195,7 @@ table.satsig TD {
 	</td>
   </tr>
 </table>		
-<script type='text/javascript' src='status_gps_vals.php?gps=<?php $_GET['gps'] ?>' defer='defer' ></script>
+<script type='text/javascript' src='status_gps_vals.php?gps=<?=$_GET['gps'] ?>' defer='defer' ></script>
 </body>
 <?php
 echo(str_repeat(' ',4096));

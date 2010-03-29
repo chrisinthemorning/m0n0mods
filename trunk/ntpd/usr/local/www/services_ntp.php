@@ -31,12 +31,27 @@
 
 $pgtitle = array("Services", "NTP Server");
 require("guiconfig.inc");
+global $config;
+include("fbegin.inc"); 
+
+if (!is_array($config['ntpserver']['sources'])) {
+	$config['ntpserver']['sources'] = array();
+}
+
+$source_maps = &$config['ntpserver']['sources'];
+
+if ($_POST) {
+	$config['ntpserver']['enable'] = $_POST['enable'] ? true : false;
+	write_config();
+	system_ntp_configure();
+}
+$pconfig = $config['ntpserver'];
+$pconfig['enable'] = isset($config['ntpserver']['enable']);
 
 ?>
-<?php include("fbegin.inc"); ?>
 <form action="services_ntp.php" method="post">
 <?php if ($savemsg) print_info_box($savemsg); ?>
-<?php if (file_exists($d_dnsmasqdirty_path)): ?><p>
+<?php if (file_exists($d_ntpserverdirty_path)): ?><p>
 <?php print_info_box_np("The DNS forwarder configuration has been changed.<br>You must apply the changes in order for them to take effect.");?><br>
 <input name="apply" type="submit" class="formbtn" id="apply" value="Apply changes"></p>
 <?php endif; ?>
@@ -48,40 +63,59 @@ require("guiconfig.inc");
 					  <td align="right" class="optsect_s"><input name="enable" type="checkbox" value="yes" <?php if ($pconfig['enable']) echo "checked"; ?> onClick="enable_change(false)"> <strong>Enable</strong></td></tr>
 					  </table></td>
 					</tr>
-				  
+					<tr> 
+					<td> <input name="submit" type="submit" class="formbtn" value="Save"> 
+					</td>
+					</tr>
               </table>
 			
-              <table width="100%" border="0" cellpadding="0" cellspacing="0" summary="mac=mapping widget">
+              <table width="100%" border="0" cellpadding="0" cellspacing="0" summary="mac=source widget">
 			  		<tr> 
-					  <td colspan="4" valign="top" class="optsect_t">
+					  <td colspan="8" valign="top" class="optsect_t">
 					  <table border="0" cellspacing="0" cellpadding="0" width="100%" summary="checkbox pane">
-					  <tr><td class="optsect_s"><strong>Reservations</strong></td></tr>
+					  <tr><td class="optsect_s"><strong>Sources</strong></td></tr>
 					  </table></td>
 					</tr>
                 <tr>
-                  <td width="35%" class="listhdrr">MAC address </td>
-                  <td width="20%" class="listhdrr">IP address</td>
-                  <td width="35%" class="listhdr">Description</td>
-                  <td width="10%" class="list"></td>
+                  <td width="20%" class="listhdrr">Target </td>
+                  <td width="15%" class="listhdrr">Refid</td>
+				  <td width="10%" class="listhdrr">MaxPoll</td>
+				  <td width="10%" class="listhdrr">MinPoll</td>
+				  <td width="10%" class="listhdrr">Offset</td>
+				  <td width="10%" class="listhdrr">Burst</td>
+                  <td width="10%" class="listhdr">iBurst</td>
+                  <td width="15%" class="list"></td>
 				</tr>
-			  <?php $i = 0; foreach ($a_maps as $mapent): ?>
+			  <?php $i = 0; foreach ($source_maps as $sourceent): ?>
                 <tr>
                   <td class="listlr">
-                    <?=htmlspecialchars($mapent['mac']);?>
+                    <?=htmlspecialchars($sourceent['target']);?>
                   </td>
                   <td class="listr">
-                    <?=htmlspecialchars($mapent['ipaddr']);?>&nbsp;
+                    <?=htmlspecialchars($sourceent['refid']);?>&nbsp;
+                  </td>
+				    <td class="listr">
+                    <?=htmlspecialchars($sourceent['maxpoll']);?>&nbsp;
+                  </td>
+				    <td class="listr">
+                    <?=htmlspecialchars($sourceent['minpoll']);?>&nbsp;
+                  </td>
+				    <td class="listr">
+                    <?=htmlspecialchars($sourceent['offset']);?>&nbsp;
+                  </td>
+				    <td class="listr">
+                    <?=htmlspecialchars($sourceent['burst']);?>&nbsp;
                   </td>
                   <td class="listbg">
-                    <?=htmlspecialchars($mapent['descr']);?>&nbsp;
+                    <?=htmlspecialchars($sourceent['iburst']);?>&nbsp;
                   </td>
-                  <td valign="middle" nowrap class="list"> <a href="services_dhcp_edit.php?if=<?=$if;?>&amp;id=<?=$i;?>"><img src="e.gif" title="edit mapping" width="17" height="17" border="0" alt="edit mapping"></a>
-                     &nbsp;<a href="services_dhcp.php?if=<?=$if;?>&amp;act=del&amp;id=<?=$i;?>" onclick="return confirm('Do you really want to delete this mapping?')"><img src="x.gif" title="delete mapping" width="17" height="17" border="0" alt="delete mapping"></a></td>
+                  <td valign="middle" nowrap class="list"> <a href="services_ntp_edit.php?id=<?=$i;?>"><img src="e.gif" title="edit source" width="17" height="17" border="0" alt="edit source"></a>
+                     &nbsp;<a href="services_ntp.php?act=del&amp;id=<?=$i;?>" onclick="return confirm('Do you really want to delete this source?')"><img src="x.gif" title="delete source" width="17" height="17" border="0" alt="delete source"></a></td>
 				</tr>
 			  <?php $i++; endforeach; ?>
                 <tr> 
-                  <td class="list" colspan="3"></td>
-                  <td class="list"> <a href="services_dhcp_edit.php?if=<?=$if;?>"><img src="plus.gif" title="add mapping" width="17" height="17" border="0" alt="add mapping"></a></td>
+                  <td class="list" colspan="7"></td>
+                  <td class="list"> <a href="services_ntp_edit.php?"><img src="plus.gif" title="add source" width="17" height="17" border="0" alt="add source"></a></td>
 				</tr>
               </table>
             </form>

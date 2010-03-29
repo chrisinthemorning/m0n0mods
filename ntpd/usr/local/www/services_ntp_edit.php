@@ -32,22 +32,9 @@
 $pgtitle = array("Services", "DNS forwarder", "Edit host");
 require("guiconfig.inc");
 
-if (!is_array($config['dnsmasq']['hosts'])) {
-	$config['dnsmasq']['hosts'] = array();
-}
-hosts_sort();
-$a_hosts = &$config['dnsmasq']['hosts'];
-
 $id = $_GET['id'];
 if (isset($_POST['id']))
 	$id = $_POST['id'];
-
-if (isset($id) && $a_hosts[$id]) {
-	$pconfig['host'] = $a_hosts[$id]['host'];
-	$pconfig['domain'] = $a_hosts[$id]['domain'];
-	$pconfig['ip'] = $a_hosts[$id]['ip'];
-	$pconfig['descr'] = $a_hosts[$id]['descr'];
-}
 
 if ($_POST) {
 
@@ -93,7 +80,7 @@ if ($_POST) {
 		else
 			$a_hosts[] = $hostent;
 		
-		touch($d_dnsmasqdirty_path);
+		touch($d_ntpserverdirty_path);
 		
 		write_config();
 		
@@ -104,34 +91,70 @@ if ($_POST) {
 ?>
 <?php include("fbegin.inc"); ?>
 <?php if ($input_errors) print_input_errors($input_errors); ?>
-            <form action="services_dnsmasq_edit.php" method="post" name="iform" id="iform">
+            <form action="services_ntp_edit.php" method="post" name="iform" id="iform">
               <table width="100%" border="0" cellpadding="6" cellspacing="0" summary="content pane">
+			                  <tr> 
+                  <td valign="top" class="vncellreq">Type</td>
+                  <td class="vtable"> 
+                    <select name="type" class="formfld" id="type" onchange="enable_change(false)">
+                      <?php $opts = array('ipaddr' => 'IP address', 'gps' => 'GPS', 'pps' => 'PPS', 'local' => 'Local');
+						foreach ($opts as $optn => $optd) {
+							echo "<option value=\"$optn\"";
+							if ($optn == $pconfig['type']) echo "selected";
+							echo ">$optd</option>\n";
+						}
+						?>
+                    </select><br>
+					Type</td>
+                </tr>
                 <tr>
-                  <td width="22%" valign="top" class="vncell">Host</td>
+                  <td width="22%" valign="top" class="vncell">Target</td>
                   <td width="78%" class="vtable"> 
                     <input name="host" type="text" class="formfld" id="host" size="40" value="<?=htmlspecialchars($pconfig['host']);?>">
-                    <br> <span class="vexpl">Name of the host, without
-                    domain part<br>
-                    e.g. <em>myhost</em></span></td>
+                    <br> <span class="vexpl">IP address or serial port.
+                   <br>
+                    e.g. <em>/dev/ttyU0</em></span></td>
                 </tr>
 				<tr>
-                  <td width="22%" valign="top" class="vncellreq">Domain</td>
+                  <td width="22%" valign="top" class="vncellreq">Reference ID</td>
                   <td width="78%" class="vtable"> 
                     <?=$mandfldhtml;?><input name="domain" type="text" class="formfld" id="domain" size="40" value="<?=htmlspecialchars($pconfig['domain']);?>">
-                    <br> <span class="vexpl">Domain of the host<br>
-                    e.g. <em>blah.com</em></span></td>
+                    <br> <span class="vexpl">This is the RefID that peers will see<br>
+                    e.g. <em>GPS0</em></span></td>
                 </tr>
 				<tr>
-                  <td width="22%" valign="top" class="vncellreq">IP address</td>
+                  <td width="22%" valign="top" class="vncellreq">MaxPoll</td>
                   <td width="78%" class="vtable"> 
-                    <?=$mandfldhtml;?><input name="ip" type="text" class="formfld" id="ip" size="40" value="<?=htmlspecialchars($pconfig['ip']);?>">
+                    <?=$mandfldhtml;?><input name="ip" type="text" class="formfld" id="ip" size="4" value="<?=htmlspecialchars($pconfig['ip']);?>">
                     <br> <span class="vexpl">IP address of the host<br>
                     e.g. <em>192.168.100.100</em></span></td>
                 </tr>
+
 				<tr>
-                  <td width="22%" valign="top" class="vncell">Description</td>
+                  <td width="22%" valign="top" class="vncell">MinPoll</td>
                   <td width="78%" class="vtable"> 
-                    <input name="descr" type="text" class="formfld" id="descr" size="40" value="<?=htmlspecialchars($pconfig['descr']);?>">
+                    <input name="descr" type="text" class="formfld" id="descr" size="4" value="<?=htmlspecialchars($pconfig['descr']);?>">
+                    <br> <span class="vexpl">You may enter a description here
+                    for your reference (not parsed).</span></td>
+                </tr>
+				<tr>
+                  <td width="22%" valign="top" class="vncell">Offset</td>
+                  <td width="78%" class="vtable"> 
+                    <input name="descr" type="text" class="formfld" id="descr" size="4" value="<?=htmlspecialchars($pconfig['descr']);?>">
+                    <br> <span class="vexpl">You may enter a description here
+                    for your reference (not parsed).</span></td>
+                </tr>
+				<tr>
+                  <td width="22%" valign="top" class="vncell">Burst</td>
+                  <td width="78%" class="vtable"> 
+                  <input name="enable" type="checkbox" value="yes" <?php if ($pconfig['enable']) echo "checked"; ?> onClick="enable_change(false)">
+                    <br> <span class="vexpl">You may enter a description here
+                    for your reference (not parsed).</span></td>
+                </tr>
+				<tr>
+                  <td width="22%" valign="top" class="vncell">iBurst</td>
+                  <td width="78%" class="vtable"> 
+                   <input name="enable" type="checkbox" value="yes" <?php if ($pconfig['enable']) echo "checked"; ?> onClick="enable_change(false)">
                     <br> <span class="vexpl">You may enter a description here
                     for your reference (not parsed).</span></td>
                 </tr>

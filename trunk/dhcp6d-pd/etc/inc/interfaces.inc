@@ -1319,6 +1319,18 @@ function calc_6to4_address($if) {
 	return false;
 }
 
+function calc_dhcppd_address($if) {
+	$addresses = get_interface_ipv6_adresses($if);
+
+	foreach ($addresses as $adr) {
+		if (!preg_match('/^fe80:/', $adr[0])) {
+			$ipv6addr=$adr;
+		}
+	}
+	return $ipv6addr;
+	
+}
+
 function suggest_ipv6_lan_addr(){
 	$sugipv6lan = "No RA found! Maybe try again in a few minutes.";
 	 /* get the prefix */

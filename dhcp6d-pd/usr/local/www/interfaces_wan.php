@@ -77,6 +77,9 @@ if (ipv6enabled()) {
 			$pconfig['aiccu_tunnelid'] = $wancfg['aiccu']['tunnelid'];
 			$pconfig['aiccu_ayiya'] = isset($wancfg['aiccu']['ayiya']);
 		}
+		if ($wancfg['ipaddr6'] == "DHCP") {
+			$pconfig['v6duid'] = $wancfg['v6duid'];
+		}
 	} else if ($wancfg['ipaddr6']) {
 		$pconfig['ipaddr6'] = $wancfg['ipaddr6'];
 		$pconfig['subnet6'] = $wancfg['subnet6'];
@@ -171,6 +174,9 @@ if ($_POST) {
 		if ($_POST['ipv6mode'] == "DHCP" && $_POST['type'] != "Static" && $_POST['type'] != "DHCP") {
 			$input_errors[] = 'IPv6 DHCP mode can only be used in conjunction with static or DHCP.';
 		}
+		if (($_POST['v6duid']  && !is_duid($_POST['v6duid']))) {
+			$input_errors[] = 'A valid DUID must be specified.';
+		}
 	}
 	
 	/* Wireless interface? */
@@ -236,8 +242,11 @@ if ($_POST) {
 		
 		if (ipv6enabled()) {
 		$wancfg['ipv6ra'] = $_POST['ipv6ra'] ? true : false;
-			if ($_POST['ipv6mode'] == "6to4" || $_POST['ipv6mode'] == "ppp" || $_POST['ipv6mode'] == "DHCP") {
+			if ($_POST['ipv6mode'] == "6to4" || $_POST['ipv6mode'] == "ppp" ) {
 				$wancfg['ipaddr6'] = $_POST['ipv6mode'];
+			} else if ($_POST['ipv6mode'] == "DHCP"){
+				$wancfg['ipaddr6'] = $_POST['ipv6mode'];
+				$wancfg['v6duid'] = $_POST['v6duid'];
 			} else if ($_POST['ipv6mode'] == "static") {
 				$wancfg['ipaddr6'] = $_POST['ipaddr6'];
 				$wancfg['subnet6'] = $_POST['subnet6'];
@@ -274,6 +283,7 @@ function enable_change(enable_over) {
 <?php if (ipv6enabled()): ?>
 	var en = (document.iform.ipv6mode.selectedIndex == 1 || document.iform.ipv6mode.selectedIndex == 3 || enable_over);
 	var aiccu_en = (document.iform.ipv6mode.selectedIndex == 5 || enable_over);
+	var dhcp6c_en = (document.iform.ipv6mode.selectedIndex == 6 || enable_over);
 	document.iform.ipaddr6.disabled = !en;
 	document.iform.subnet6.disabled = !en;
 	document.iform.gateway6.disabled = !(document.iform.ipv6mode.selectedIndex == 1 || enable_over);
@@ -283,6 +293,7 @@ function enable_change(enable_over) {
 	document.iform.aiccu_tunnelid.disabled = !aiccu_en;
 	document.iform.aiccu_ayiya.disabled = !aiccu_en;
 	document.iform.ipv6ra.disabled = !(document.iform.ipv6mode.selectedIndex != 0 || enable_over);
+	document.iform.v6duid.disabled = !dhcp6c_en;
 <?php endif; ?>
 	
 	if (document.iform.mode) {
@@ -480,6 +491,12 @@ function type_change() {
 					AICCU is used with dynamic tunnels from SixXS (only heartbeat tunnels are supported).</td>
                 </tr>
                 <tr> 
+                  <td valign="top" class="vncellreq">DHCPv6 DUID</td>
+                  <td class="vtable"> 
+                    <input name="v6duid" type="text" class="formfld" id="v6duid" size="30" value="<?=htmlspecialchars($pconfig['v6duid']);?>">
+                    </td>
+                </tr>
+				<tr> 
                   <td valign="top" class="vncellreq">IPv6 address</td>
                   <td class="vtable"> 
                     <input name="ipaddr6" type="text" class="formfld" id="ipaddr6" size="30" value="<?=htmlspecialchars($pconfig['ipaddr6']);?>">

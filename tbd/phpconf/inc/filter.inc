@@ -346,7 +346,7 @@ function filter_rules_generate($ipv6 = false) {
 		}
 		if ($lanip == "DHCP-PD") {
 			$lansn = 64;
-			list($lanip,$lansn) = calc_dhcppd_address($lancfg['if']);
+			list($lanip,$lansn) = get_dhcppd_address($lancfg['if']);
 		}
 		
 		if (!$lanip) {

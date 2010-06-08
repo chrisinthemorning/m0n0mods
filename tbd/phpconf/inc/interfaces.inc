@@ -673,6 +673,7 @@ function interfaces_wan_configure6($newwanip = false) {
 	remove_all_ipv6_addresses($wancfg['if']);
 	remove_all_ipv6_addresses("stf0");
 	remove_all_ipv6_addresses("gif0");
+	services_dhcp6c_stop()
 	
 	/* kill any running aiccu */
 	killbypid("{$g['varrun_path']}/aiccu.pid");
@@ -1063,8 +1064,6 @@ function interfaces_rtadvd_configure() {
 	killbyname('rtadvd');
 
 	$wasrunning = file_exists("{$g['varrun_path']}/rtadvd.pid");
-
-	mwexec('/sbin/sysctl net.inet6.ip6.accept_rtadv=0');
 
 	if (!ipv6enabled())
 		return 0;

@@ -31,6 +31,12 @@
 /* include all configuration functions */
 require_once("functions.inc");
 
+function services_dhcp6c_stop() {
+	/* kill any running dhcp6c */
+	killbypid("{$g['varrun_path']}/dhcp6c.pid");
+	mwexec('/sbin/sysctl net.inet6.ip6.accept_rtadv=0');
+}
+
 function services_dhcp6c_configure() {
 	global $config, $g;
 	
@@ -66,6 +72,7 @@ function services_dhcp6c_configure() {
 	}
 	
 	if ($config['interfaces']['wan']['ipaddr6'] == "DHCP") {
+		mwexec('/sbin/sysctl net.inet6.ip6.accept_rtadv=1');
 		$d6wans = <<<EOD
 		request domain-name-servers;
 		script "/etc/dhcp6c-exit-hooks";

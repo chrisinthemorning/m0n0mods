@@ -1322,7 +1322,7 @@ function get_dhcppd_address($if) {
 	$addresses = get_interface_ipv6_adresses($if);
 
 	foreach ($addresses as $adr) {
-		if ((!preg_match('/^fe80:/', $adr[0])) || (!preg_match('autoconf$',$adr[0]))) {
+		if ((!preg_match('/^fe80:/', $adr[0])) || (!preg_match('/autoconf$/',$adr[0]))) {
 			$ipv6addr=$adr;
 		}
 	}
@@ -1334,7 +1334,7 @@ function get_autoconf_address($if) {
 	$addresses = get_interface_ipv6_adresses($if);
 
 	foreach ($addresses as $adr) {
-		if (preg_match('autoconf$',$adr[0])) {
+		if (preg_match('/autoconf$/',$adr[0])) {
 			$ipv6addr=$adr;
 		}
 	}

@@ -391,7 +391,7 @@ function filter_rules_generate($ipv6 = false) {
 						$oic['sn'] = 64;
 					} elseif ($oc['ipaddr6'] == "DHCP-PD") {
 						$oic['sn'] = 64;
-						list($oic['ip'],$oic['sn']) = calc_dhcppd_address($oc['if']);
+						list($oic['ip'],$oic['sn']) = get_dhcppd_address($oc['if']);
 					} else {
 						$oic['ip'] = $oc['ipaddr6'];
 						$oic['sn'] = $oc['subnet6'];

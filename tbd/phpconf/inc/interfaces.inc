@@ -148,7 +148,7 @@ function interfaces_lan_configure() {
 		/* reload dhcp6s (gateway may have changed) */
 		services_dhcp6s_configure();
 		
-		/* reload dnsmasq */
+		/* reload dnsmasqasq */
 		services_dnsmasq_configure();
 		
 		/* reload webgui */
@@ -673,7 +673,7 @@ function interfaces_wan_configure6($newwanip = false) {
 	remove_all_ipv6_addresses($wancfg['if']);
 	remove_all_ipv6_addresses("stf0");
 	remove_all_ipv6_addresses("gif0");
-	services_dhcp6c_stop()
+	services_dhcp6c_stop();
 	
 	/* kill any running aiccu */
 	killbypid("{$g['varrun_path']}/aiccu.pid");

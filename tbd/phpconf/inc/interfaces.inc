@@ -700,6 +700,27 @@ function interfaces_wan_configure6($newwanip = false) {
 			}
 		} else if ($wancfg['ipaddr6'] == "DHCP") {
 			services_dhcp6c_configure();
+		} else if ($wancfg['ipaddr6'] == "SLAAC") {
+			services_slaac_configure();
+		} else if ($wancfg['ipaddr6'] == "6RD") {
+			/* obtain current IPv4 address and make a 6to4 address out of it */
+			$v6addr = calc_6rd_address("wan");
+			
+			if ($v6addr) {
+				mwexec("/sbin/ifconfig stf0 create");
+				mwexec("/sbin/ifconfig stf0 inet6 $v6addr prefixlen 16 alias");
+				mwexec('/sbin/route delete -inet6 default');
+		
+				/* always use 6to4 anycast address 192.88.99.1 for now */
+				mwexec('/sbin/route add -inet6 default 2002:c058:6301::');
+			
+				if (!$g['booting']) {
+					/* a changed 6to4 prefix on WAN means we may also need to change the
+					   IPv6 prefix on LAN/OPT */
+					interfaces_lan_configure6();
+					interfaces_optional_configure6();
+				}
+			}
 		} else if ($wancfg['ipaddr6'] == "ppp") {
 			if ($newwanip) {
 				/* called from up-script -> add IPv6 default route */
@@ -802,7 +823,7 @@ function interfaces_wan_dhcp_configure() {
 	
 	$wancfg = $config['interfaces']['wan'];
 
-	/* generate dhclient.conf */
+	/* generate dhclient */
 	$fd = fopen("{$g['varetc_path']}/dhclient.conf", "w");
 	if (!$fd) {
 		echo("Error: cannot open dhclient.conf in interfaces_wan_dhcp_configure().\n");
@@ -813,6 +834,7 @@ function interfaces_wan_dhcp_configure() {
  
  	if ($wancfg['dhcphostname']) {
 		$dhclientconf .= <<<EOD
+option option_6rd code 212 = string;
 send dhcp-client-identifier "{$wancfg['dhcphostname']}";
 interface "{$wancfg['if']}" {
 	send host-name "{$wancfg['dhcphostname']}";
@@ -1304,6 +1326,21 @@ function remove_all_ipv6_addresses($if) {
 }
 
 function calc_6to4_address($if) {
+	$wan_v6nibbles = convert_to_6to4_nibbles(get_current_wan_address(false));
+	if ($wan_v6nibbles) {
+		if ($if == "wan")
+			$nth = 0;
+		else if ($if == "lan")
+			$nth = 1;
+		else if (preg_match('/^opt(\d+)$/', $if, $matches))
+			$nth = $matches[1] + 1;
+		
+		return "2002:{$wan_v6nibbles}:{$nth}::1";
+	}
+	return false;
+}
+
+function calc_6rd_address($if) {
 	$wan_v6nibbles = convert_to_6to4_nibbles(get_current_wan_address(false));
 	if ($wan_v6nibbles) {
 		if ($if == "wan")

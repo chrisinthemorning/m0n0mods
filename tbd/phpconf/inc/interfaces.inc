@@ -702,6 +702,9 @@ function interfaces_wan_configure6($newwanip = false) {
 			services_dhcp6c_configure();
 		} else if ($wancfg['ipaddr6'] == "SLAAC") {
 			services_slaac_configure();
+			if ($config['interfaces']['lan']['ipaddr6'] == "DHCP-PD") {
+				services_dhcp6c_configure();
+			}
 		} else if ($wancfg['ipaddr6'] == "6RD") {
 			/* obtain current IPv4 address and make a 6to4 address out of it */
 			$v6addr = calc_6rd_address("wan");
@@ -726,6 +729,9 @@ function interfaces_wan_configure6($newwanip = false) {
 				/* called from up-script -> add IPv6 default route */
 				mwexec('/sbin/route delete -inet6 default');
 				mwexec('/sbin/route add -inet6 default -iface ' . $g['pppoe_interface']);
+			}
+			if ($config['interfaces']['lan']['ipaddr6'] == "DHCP-PD") {
+				services_dhcp6c_configure();
 			}
 		} else if ($wancfg['ipaddr6'] == "aiccu") {
 			/* fire up AICCU, which will take care of setting the IP address

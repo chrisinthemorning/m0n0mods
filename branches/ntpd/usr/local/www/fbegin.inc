@@ -53,7 +53,7 @@ function dynamic_menu(&$menu, $menu_title) {
 		}
 	}
 
-	// Workaround for IPv6 pages
+	// Workaround for IPv6 pages.
 	if (ipv6enabled() && in_array('firewall_rules.php', $allowed))
 		$allowed[] = 'firewall_rules.php?type=ipv6';
 	if (ipv6enabled() && in_array('system_routes.php', $allowed))

@@ -1,6 +1,6 @@
 <?php
 /*
-	$Id: fbegin.inc 344 2009-07-20 19:33:08Z mkasper $
+	$Id: fbegin.inc 430 2011-04-03 16:42:21Z awhite $
 	part of m0n0wall (http://m0n0.ch/wall)
 	
 	Copyright (C) 2003-2007 Manuel Kasper <mk@neon1.net>.
@@ -175,7 +175,7 @@ if (is_dir("{$g['www_path']}/ext")){
       $dh = @opendir("{$g['www_path']}/ext");
       if ($dh) {
         while (($extd = readdir($dh)) !== false) {
-          if (($extd === ".") || ($extd === ".."))
+          if (($extd === ".") || ($extd === "..") || ($extd === "index.html"))
             continue;
           $extfiles=explode("\n",trim(file_get_contents("{$g['www_path']}/ext/" . $extd . "/menu2.inc")));
           $menu['Extensions'][array_shift($extfiles)]=$extfiles;
@@ -191,6 +191,7 @@ $menu['Diagnostics']['Logs']			= array('diag_logs.php',
 							  					'diag_logs_vpn.php',
 							  					'diag_logs_settings.php');  
 $menu['Diagnostics']['DHCP Leases'] 	= array('diag_dhcp_leases.php');
+$menu['Diagnostics']['CPU Graph']		= array('status_graph_cpu.php');
 $menu['Diagnostics']['IPsec'] 			= array('diag_ipsec_sad.php',
 												'diag_ipsec_spd.php');
 $menu['Diagnostics']['Ping/Traceroute'] = array('diag_ping.php',

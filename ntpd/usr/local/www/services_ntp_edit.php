@@ -29,8 +29,28 @@
 	POSSIBILITY OF SUCH DAMAGE.
 */
 
-$pgtitle = array("Services", "DNS forwarder", "Edit host");
+$pgtitle = array("Services", "NTP Server", "Edit host");
 require("guiconfig.inc");
+
+if (!is_array($config['ntpserver']['sources'])) {
+	$config['ntpserver']['sources'] = array();
+}
+
+$source_maps = &$config['ntpserver']['sources'];
+$id = $_GET['id'];
+if (isset($_POST['id']))
+	$id = $_POST['id'];
+	
+if (isset($id) && $source_maps[$id]) {
+		$pconfig['target'] = $ntpsource[$id]['target'];
+		$pconfig['refid'] = $ntpsource[$id]['refid'];
+		$pconfig['maxpoll'] = $ntpsource[$id]['maxpoll'];
+		$pconfig['minpoll'] = $ntpsource[$id]['minpoll'];
+		$pconfig['offset'] = $ntpsource[$id]['offset'];
+		$pconfig['burst'] = $ntpsource[$id]['burst'];
+		$pconfig['iburst'] = $ntpsource[$id]['iburst'];
+		$pconfig['stratum'] = $ntpsource[$id]['stratum'];
+}
 
 $id = $_GET['id'];
 if (isset($_POST['id']))
@@ -42,49 +62,36 @@ if ($_POST) {
 	$pconfig = $_POST;
 
 	/* input validation */
-	$reqdfields = explode(" ", "domain ip");
-	$reqdfieldsn = explode(",", "Domain,IP address");
+	$reqdfieldsn = explode(",", "Type,Target");
 	
 	do_input_validation($_POST, $reqdfields, $reqdfieldsn, &$input_errors);
-	
-	if (($_POST['host'] && (!is_hostname($_POST['host'])) && ($_POST['host'] != '*') )) {
-		$input_errors[] = "A valid host must be specified.";
-	}
+
 	if (($_POST['domain'] && !is_domain($_POST['domain']))) {
 		$input_errors[] = "A valid domain must be specified.";
 	}
-	if (($_POST['ip'] && !is_ipaddr4or6($_POST['ip']))) {
-			$input_errors[] = "A valid IP address must be specified.";
-	}
 
 	/* check for overlaps */
-	foreach ($a_hosts as $hostent) {
-		if (isset($id) && ($a_hosts[$id]) && ($a_hosts[$id] === $hostent))
-			continue;
 
-		if (($hostent['host'] == $_POST['host']) && ($hostent['domain'] == $_POST['domain'])) {
-			$input_errors[] = "This host/domain already exists.";
-			break;
-		}
-	}
 
 	if (!$input_errors) {
-		$hostent = array();
-		$hostent['host'] = $_POST['host'];
-		$hostent['domain'] = $_POST['domain'];
-		$hostent['ip'] = $_POST['ip'];
-		$hostent['descr'] = $_POST['descr'];
-
-		if (isset($id) && $a_hosts[$id])
-			$a_hosts[$id] = $hostent;
+		$ntpsource = array();
+		$ntpsource['type'] = $_POST['type'];
+		$ntpsource['target'] = $_POST['target'];
+		$ntpsource['refid'] = $_POST['refid'];
+		$ntpsource['maxpoll'] = $_POST['maxpoll'];
+		$ntpsource['minpoll'] = $_POST['minpoll'];
+		$ntpsource['offset'] = $_POST['offset'];
+		$ntpsource['burst'] = $_POST['burst'] ? true : false;
+		$ntpsource['iburst'] = $_POST['iburst'] ? true : false;
+		$ntpsource['stratum'] = $_POST['stratum'];
+		if (isset($id) && $source_maps[$id])
+			$source_maps[$id] = $ntpsource;
 		else
-			$a_hosts[] = $hostent;
-		
-		touch($d_ntpserverdirty_path);
+			$source_maps[] = $ntpsource;
 		
 		write_config();
 		
-		header("Location: services_dnsmasq.php");
+		header("Location: services_ntp.php");
 		exit;
 	}
 }
@@ -93,7 +100,7 @@ if ($_POST) {
 <?php if ($input_errors) print_input_errors($input_errors); ?>
             <form action="services_ntp_edit.php" method="post" name="iform" id="iform">
               <table width="100%" border="0" cellpadding="6" cellspacing="0" summary="content pane">
-			                  <tr> 
+				<tr> 
                   <td valign="top" class="vncellreq">Type</td>
                   <td class="vtable"> 
                     <select name="type" class="formfld" id="type" onchange="enable_change(false)">
@@ -104,65 +111,72 @@ if ($_POST) {
 							echo ">$optd</option>\n";
 						}
 						?>
-                    </select><br>
-					Type</td>
+                    </select></td>
                 </tr>
                 <tr>
                   <td width="22%" valign="top" class="vncell">Target</td>
                   <td width="78%" class="vtable"> 
-                    <input name="host" type="text" class="formfld" id="host" size="40" value="<?=htmlspecialchars($pconfig['host']);?>">
-                    <br> <span class="vexpl">IP address or serial port.
+                    <input name="target" type="text" class="formfld" id="target" size="40" value="<?=htmlspecialchars($pconfig['host']);?>">
+                    <br> <span class="vexpl">IP address or device port.
                    <br>
                     e.g. <em>/dev/ttyU0</em></span></td>
                 </tr>
 				<tr>
                   <td width="22%" valign="top" class="vncellreq">Reference ID</td>
                   <td width="78%" class="vtable"> 
-                    <?=$mandfldhtml;?><input name="domain" type="text" class="formfld" id="domain" size="40" value="<?=htmlspecialchars($pconfig['domain']);?>">
+                    <?=$mandfldhtml;?><input name="refid" type="text" class="formfld" id="refid" size="40" value="<?=htmlspecialchars($pconfig['domain']);?>">
                     <br> <span class="vexpl">This is the RefID that peers will see<br>
                     e.g. <em>GPS0</em></span></td>
                 </tr>
 				<tr>
                   <td width="22%" valign="top" class="vncellreq">MaxPoll</td>
                   <td width="78%" class="vtable"> 
-                    <?=$mandfldhtml;?><input name="ip" type="text" class="formfld" id="ip" size="4" value="<?=htmlspecialchars($pconfig['ip']);?>">
-                    <br> <span class="vexpl">IP address of the host<br>
+                    <?=$mandfldhtml;?><input name="maxpoll" type="text" class="formfld" id="maxpoll" size="4" value="<?=htmlspecialchars($pconfig['maxpoll']);?>">
+                    <br> <span class="vexpl">The maxpoll number specifies the maximum poll interval allowed by any peer of the Internet system.
+					The maximum poll interval is calculated, in seconds, as 2 to the power of maxpoll value. The default value of maxpoll is 10,
+					therefore the corresponding poll interval is ~17 minutes.<br>
                     e.g. <em>192.168.100.100</em></span></td>
                 </tr>
 
 				<tr>
                   <td width="22%" valign="top" class="vncell">MinPoll</td>
                   <td width="78%" class="vtable"> 
-                    <input name="descr" type="text" class="formfld" id="descr" size="4" value="<?=htmlspecialchars($pconfig['descr']);?>">
-                    <br> <span class="vexpl">You may enter a description here
-                    for your reference (not parsed).</span></td>
+                    <input name="minpoll" type="text" class="formfld" id="minpoll" size="4" value="<?=htmlspecialchars($pconfig['minpoll']);?>">
+                    <br> <span class="vexpl">The minpoll number specifies the minimum poll interval allowed by any peer of the Internet system.
+					The minimum poll interval is calculated, in seconds, as 2 to the power of minpoll value.
+					The default value of minpoll is 6, i.e. the corresponding poll interval is 64 seconds.</span></td>
                 </tr>
 				<tr>
                   <td width="22%" valign="top" class="vncell">Offset</td>
                   <td width="78%" class="vtable"> 
-                    <input name="descr" type="text" class="formfld" id="descr" size="4" value="<?=htmlspecialchars($pconfig['descr']);?>">
-                    <br> <span class="vexpl">You may enter a description here
-                    for your reference (not parsed).</span></td>
+                    <input name="offset" type="text" class="formfld" id="offset" size="4" value="<?=htmlspecialchars($pconfig['offset']);?>">
+                    <br> <span class="vexpl">Adjustment time for this source in ms.</span></td>
                 </tr>
 				<tr>
                   <td width="22%" valign="top" class="vncell">Burst</td>
                   <td width="78%" class="vtable"> 
-                  <input name="enable" type="checkbox" value="yes" <?php if ($pconfig['enable']) echo "checked"; ?> onClick="enable_change(false)">
-                    <br> <span class="vexpl">You may enter a description here
-                    for your reference (not parsed).</span></td>
+                  <input name="burst" type="checkbox" value="yes" <?php if ($pconfig['enable']) echo "checked"; ?> onClick="enable_change(false)">
+                    <br> <span class="vexpl">When a server is Reachable send a burst of eight packets during initial synchronization acquisition
+					instead of the single packet that is normally sent.	The packet spacing is two seconds.</span></td>
                 </tr>
 				<tr>
                   <td width="22%" valign="top" class="vncell">iBurst</td>
                   <td width="78%" class="vtable"> 
-                   <input name="enable" type="checkbox" value="yes" <?php if ($pconfig['enable']) echo "checked"; ?> onClick="enable_change(false)">
-                    <br> <span class="vexpl">You may enter a description here
-                    for your reference (not parsed).</span></td>
+                   <input name="iburst" type="checkbox" value="yes" <?php if ($pconfig['enable']) echo "checked"; ?> onClick="enable_change(false)">
+                    <br> <span class="vexpl">When a server is Uneachable send a burst of eight packets during initial synchronization acquisition
+					instead of the single packet that is normally sent.	The packet spacing is two seconds.</span></td>
+                </tr>
+				<tr>
+                  <td width="22%" valign="top" class="vncell">Stratum</td>
+                  <td width="78%" class="vtable"> 
+                    <input name="stratum" type="text" class="formfld" id="stratum" size="4" value="<?=htmlspecialchars($pconfig['offset']);?>">
+                    <br> <span class="vexpl">Stratum</span></td>
                 </tr>
                 <tr>
                   <td width="22%" valign="top">&nbsp;</td>
                   <td width="78%"> 
                     <input name="Submit" type="submit" class="formbtn" value="Save">
-                    <?php if (isset($id) && $a_hosts[$id]): ?>
+                    <?php if (isset($id) && $source_maps[$id]): ?>
                     <input name="id" type="hidden" value="<?=$id;?>">
                     <?php endif; ?>
                   </td>

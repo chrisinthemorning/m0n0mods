@@ -116,7 +116,7 @@ if ($_POST) {
                 <tr>
                   <td width="22%" valign="top" class="vncell">Target</td>
                   <td width="78%" class="vtable"> 
-                    <input name="target" type="text" class="formfld" id="target" size="40" value="<?=htmlspecialchars($pconfig['host']);?>">
+                    <input name="target" type="text" class="formfld" id="target" size="40" value="<?=htmlspecialchars($pconfig['target']);?>">
                     <br> <span class="vexpl">IP address or device port.
                    <br>
                     e.g. <em>/dev/ttyU0</em></span></td>
@@ -124,7 +124,7 @@ if ($_POST) {
 				<tr>
                   <td width="22%" valign="top" class="vncellreq">Reference ID</td>
                   <td width="78%" class="vtable"> 
-                    <?=$mandfldhtml;?><input name="refid" type="text" class="formfld" id="refid" size="40" value="<?=htmlspecialchars($pconfig['domain']);?>">
+                    <?=$mandfldhtml;?><input name="refid" type="text" class="formfld" id="refid" size="40" value="<?=htmlspecialchars($pconfig['refid']);?>">
                     <br> <span class="vexpl">This is the RefID that peers will see<br>
                     e.g. <em>GPS0</em></span></td>
                 </tr>

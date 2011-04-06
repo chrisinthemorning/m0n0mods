@@ -45,6 +45,15 @@ if ($_POST) {
 	write_config();
 	system_ntp_configure(); 
 }
+
+if ($_GET['act'] == "del") {
+		if ($source_maps[$_GET['id']]) {
+			unset($source_maps[$_GET['id']]);
+			write_config();
+			header("Location: services_ntp.php");
+			exit;
+		}
+}
 $pconfig = $config['ntpserver'];
 $pconfig['enable'] = isset($config['ntpserver']['enable']);
 

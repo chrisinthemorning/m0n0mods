@@ -490,6 +490,38 @@ function system_ntp_configure() {
 		}
 	} else {
 	/* create ntpd.conf etc and run ntpd */
+		if (!is_array($config['ntpserver']['sources'])) {
+			$config['ntpserver']['sources'] = array();
+		}	
+		$source_maps = &$config['ntpserver']['sources'];
+		
+		$i = 0;
+		foreach ($source_maps as $sourceent){ 
+			switch ($sourceent['type']) {
+				case "ipaddr":
+					$ntpdconf .= "\nserver " . $sourceent['target'];
+					if (isset($sourceent['minpoll'])) $ntpdconf .= " minpoll " . $sourceent['minpoll'] ;
+					if (isset($sourceent['maxpoll'])) $ntpdconf .= " maxpoll " . $sourceent['maxpoll'] ;
+					if (isset($sourceent['burst'])) $ntpdconf .= " burst" ;
+					if (isset($sourceent['iburst'])) $ntpdconf .= " iburst" ;
+				case "gps":
+					/* symlink gps0 */
+				case "pps":
+				case "local":
+			}
+		}
+
+		/* write ntpd.conf */
+		$fd = fopen("{$g['varetc_path']}/ntpd.conf", 'w');
+		if (!$fd) {
+			printf("Error: cannot open ntpd.conf in system_ntp_configure().\n");
+			return 1;
+		}
+		fwrite($fd, $ntpdconf);
+		fclose($fd);
+		
+		/* fire up rtadvd */
+		mwexec("/usr/sbin/ntpd -c {$g['varetc_path']}/ntpd.conf -l {$g['varlog_path']}/ntpd.log -p {$g['varrun_path']}/ntpd.pid 2>&1 " );
 	}
 		
 	if ($g['booting'])

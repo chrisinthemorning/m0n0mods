@@ -132,7 +132,7 @@ if ($_POST) {
                   <td width="22%" valign="top" class="vncellreq">MaxPoll</td>
                   <td width="78%" class="vtable"> 
                     <select name="maxpoll" class="formfld" id="maxpoll">
-                    <?php for ($i = 1; $i <=30 0; $i++): ?>
+                    <?php for ($i = 1; $i <=30; $i++): ?>
                       <option value="<?=$i;?>" <?php if ($i == $pconfig['maxpoll']) echo "selected"; ?>> 
                       <?=$i;?>
                       </option>
@@ -146,7 +146,7 @@ if ($_POST) {
                   <td width="22%" valign="top" class="vncell">MinPoll</td>
                   <td width="78%" class="vtable"> 
                     <select name="minpoll" class="formfld" id="minpoll">
-                    <?php for ($i = 1; $i <=30 0; $i++): ?>
+                    <?php for ($i = 4; $i <=30; $i++): ?>
                       <option value="<?=$i;?>" <?php if ($i == $pconfig['minpoll']) echo "selected"; ?>> 
                       <?=$i;?>
                       </option>

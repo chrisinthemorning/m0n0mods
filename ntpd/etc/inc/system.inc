@@ -521,7 +521,7 @@ function system_ntp_configure() {
 		fclose($fd);
 		
 		/* fire up rtadvd */
-		mwexec("/usr/sbin/ntpd -c {$g['varetc_path']}/ntpd.conf -l {$g['varlog_path']}/ntpd.log -p {$g['varrun_path']}/ntpd.pid 2>&1 " );
+		mwexec("/usr/sbin/ntpd -c {$g['varetc_path']}/ntpd.conf -p {$g['varrun_path']}/ntpd.pid 2>&1 " );
 	}
 		
 	if ($g['booting'])

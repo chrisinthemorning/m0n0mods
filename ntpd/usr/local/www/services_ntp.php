@@ -63,11 +63,15 @@ $pconfig['enable'] = isset($config['ntpserver']['enable']);
 					  <td align="right" class="optsect_s"><input name="enable" type="checkbox" value="yes" <?php if ($pconfig['enable']) echo "checked"; ?> onClick="enable_change(false)"> <strong>Enable</strong></td></tr>
 					  </table></td>
 					</tr>
+					<tr> 
+					<td> <input name="submit" type="submit" class="formbtn" value="Save"> 
+					</td>
+					</tr>
               </table>
 				<br>
               <table width="100%" border="0" cellpadding="0" cellspacing="0" summary="mac=source widget">
 			  		<tr> 
-					  <td colspan="8" valign="top" class="optsect_t">
+					  <td colspan="9" valign="top" class="optsect_t">
 					  <table border="0" cellspacing="0" cellpadding="0" width="100%" summary="checkbox pane">
 					  <tr><td class="optsect_s"><strong>Sources</strong></td></tr>
 					  </table></td>
@@ -81,7 +85,7 @@ $pconfig['enable'] = isset($config['ntpserver']['enable']);
 				  <td width="10%" class="listhdrr">Offset</td>
 				  <td width="5%" class="listhdrr">Burst</td>
                   <td width="5%" class="listhdrr">iBurst</td>
-				  <td width="10%" class="listhdr">Stratum</td>
+				  <td width="10%" class="listhdrr">Stratum</td>
                   <td width="5%" class="list"></td>
 				</tr>
 			  <?php $i = 0; foreach ($source_maps as $sourceent): ?>
@@ -89,7 +93,7 @@ $pconfig['enable'] = isset($config['ntpserver']['enable']);
                   <td class="listlr">
                     <?=htmlspecialchars($sourceent['type']);?>
                   </td>
-	             <td class="listlr">
+	             <td class="listr">
                     <?=htmlspecialchars($sourceent['target']);?>
                   </td>
                   <td class="listr">
@@ -105,10 +109,10 @@ $pconfig['enable'] = isset($config['ntpserver']['enable']);
                     <?=htmlspecialchars($sourceent['offset']);?>&nbsp;
                   </td>
 				    <td class="listr">
-					<input name="burst" type="checkbox"  <?php if ($sourceent['burst']) echo "checked"; ?> >
+					<input name="burst" type="checkbox"  <?php if (isset($sourceent['burst'])) echo "checked"; ?> >
                   </td>
                   <td class="listr">
-                    <input name="iburst" type="checkbox" <?php if ($sourceent['iburst']) echo "checked"; ?> >
+                    <input name="iburst" type="checkbox" <?php if (isset($sourceent['iburst'])) echo "checked"; ?> >
                   </td>
 					<td class="listr">
                     <?=htmlspecialchars($sourceent['stratum']);?>&nbsp;
@@ -121,10 +125,6 @@ $pconfig['enable'] = isset($config['ntpserver']['enable']);
                   <td class="list" colspan="9"></td>
                   <td class="list"> <a href="services_ntp_edit.php?"><img src="plus.gif" title="add source" width="17" height="17" border="0" alt="add source"></a></td>
 				</tr>
-				<tr> 
-					<td> <input name="submit" type="submit" class="formbtn" value="Save"> 
-					</td>
-					</tr>
               </table>
             </form>
 <?php include("fend.inc"); ?>

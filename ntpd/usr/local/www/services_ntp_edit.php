@@ -42,14 +42,14 @@ if (isset($_POST['id']))
 	$id = $_POST['id'];
 	
 if (isset($id) && $source_maps[$id]) {
-		$pconfig['target'] = $ntpsource[$id]['target'];
-		$pconfig['refid'] = $ntpsource[$id]['refid'];
-		$pconfig['maxpoll'] = $ntpsource[$id]['maxpoll'];
-		$pconfig['minpoll'] = $ntpsource[$id]['minpoll'];
-		$pconfig['offset'] = $ntpsource[$id]['offset'];
-		$pconfig['burst'] = $ntpsource[$id]['burst'];
-		$pconfig['iburst'] = $ntpsource[$id]['iburst'];
-		$pconfig['stratum'] = $ntpsource[$id]['stratum'];
+		$pconfig['target'] = $source_maps[$id]['target'];
+		$pconfig['refid'] = $source_maps[$id]['refid'];
+		$pconfig['maxpoll'] = $source_maps[$id]['maxpoll'];
+		$pconfig['minpoll'] = $source_maps[$id]['minpoll'];
+		$pconfig['offset'] = $source_maps[$id]['offset'];
+		$pconfig['burst'] = $source_maps[$id]['burst'];
+		$pconfig['iburst'] = $source_maps[$id]['iburst'];
+		$pconfig['stratum'] = $source_maps[$id]['stratum'];
 }
 
 $id = $_GET['id'];
@@ -131,18 +131,27 @@ if ($_POST) {
 				<tr>
                   <td width="22%" valign="top" class="vncellreq">MaxPoll</td>
                   <td width="78%" class="vtable"> 
-                    <?=$mandfldhtml;?><input name="maxpoll" type="text" class="formfld" id="maxpoll" size="4" value="<?=htmlspecialchars($pconfig['maxpoll']);?>">
-                    <br> <span class="vexpl">The maxpoll number specifies the maximum poll interval allowed by any peer of the Internet system.
+                    <select name="maxpoll" class="formfld" id="maxpoll">
+                    <?php for ($i = 1; $i <=30 0; $i++): ?>
+                      <option value="<?=$i;?>" <?php if ($i == $pconfig['maxpoll']) echo "selected"; ?>> 
+                      <?=$i;?>
+                      </option>
+                      <?php endfor; ?>
+                    </select> <span class="vexpl">The maxpoll number specifies the maximum poll interval allowed by any peer of the Internet system.
 					The maximum poll interval is calculated, in seconds, as 2 to the power of maxpoll value. The default value of maxpoll is 10,
-					therefore the corresponding poll interval is ~17 minutes.<br>
-                    e.g. <em>192.168.100.100</em></span></td>
+					therefore the corresponding poll interval is ~17 minutes.</span></td>
                 </tr>
 
 				<tr>
                   <td width="22%" valign="top" class="vncell">MinPoll</td>
                   <td width="78%" class="vtable"> 
-                    <input name="minpoll" type="text" class="formfld" id="minpoll" size="4" value="<?=htmlspecialchars($pconfig['minpoll']);?>">
-                    <br> <span class="vexpl">The minpoll number specifies the minimum poll interval allowed by any peer of the Internet system.
+                    <select name="minpoll" class="formfld" id="minpoll">
+                    <?php for ($i = 1; $i <=30 0; $i++): ?>
+                      <option value="<?=$i;?>" <?php if ($i == $pconfig['minpoll']) echo "selected"; ?>> 
+                      <?=$i;?>
+                      </option>
+                      <?php endfor; ?>
+                    </select> <span class="vexpl">The minpoll number specifies the minimum poll interval allowed by any peer of the Internet system.
 					The minimum poll interval is calculated, in seconds, as 2 to the power of minpoll value.
 					The default value of minpoll is 6, i.e. the corresponding poll interval is 64 seconds.</span></td>
                 </tr>
@@ -156,21 +165,24 @@ if ($_POST) {
                   <td width="22%" valign="top" class="vncell">Burst</td>
                   <td width="78%" class="vtable"> 
                   <input name="burst" type="checkbox" value="yes" <?php if ($pconfig['enable']) echo "checked"; ?> onClick="enable_change(false)">
-                    <br> <span class="vexpl">When a server is Reachable send a burst of eight packets during initial synchronization acquisition
-					instead of the single packet that is normally sent.	The packet spacing is two seconds.</span></td>
+                    <br> <span class="vexpl">When a server is Reachable send a burst of eight packets.</span></td>
                 </tr>
 				<tr>
                   <td width="22%" valign="top" class="vncell">iBurst</td>
                   <td width="78%" class="vtable"> 
                    <input name="iburst" type="checkbox" value="yes" <?php if ($pconfig['enable']) echo "checked"; ?> onClick="enable_change(false)">
-                    <br> <span class="vexpl">When a server is Uneachable send a burst of eight packets during initial synchronization acquisition
-					instead of the single packet that is normally sent.	The packet spacing is two seconds.</span></td>
+                    <br> <span class="vexpl">When a server is Uneachable send a burst of eight packets.</span></td>
                 </tr>
 				<tr>
                   <td width="22%" valign="top" class="vncell">Stratum</td>
                   <td width="78%" class="vtable"> 
-                    <input name="stratum" type="text" class="formfld" id="stratum" size="4" value="<?=htmlspecialchars($pconfig['offset']);?>">
-                    <br> <span class="vexpl">Stratum</span></td>
+                    <select name="stratum" class="formfld" id="stratum">
+                    <?php for ($i = 10; $i > 0; $i--): ?>
+                      <option value="<?=$i;?>" <?php if ($i == $pconfig['stratum']) echo "selected"; ?>> 
+                      <?=$i;?>
+                      </option>
+                      <?php endfor; ?>
+                    </select> <span class="vexpl">Stratum</span></td>
                 </tr>
                 <tr>
                   <td width="22%" valign="top">&nbsp;</td>

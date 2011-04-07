@@ -468,6 +468,7 @@ function system_ntp_configure() {
 		killbypid("{$g['varrun_path']}/runsntp.pid");
 		killbypid("{$g['varrun_path']}/sntp.pid");
 		killbypid("{$g['varrun_path']}/ntpd.pid");
+		/* unlink symlinks */
 	}
 
 	if (!isset($config['ntpserver']['enable'])) {
@@ -489,26 +490,55 @@ function system_ntp_configure() {
 				escapeshellarg($timeservers));
 		}
 	} else {
-	/* create ntpd.conf etc and run ntpd */
+		/* create ntpd.conf etc and run ntpd */
 		if (!is_array($config['ntpserver']['sources'])) {
 			$config['ntpserver']['sources'] = array();
 		}	
 		$source_maps = &$config['ntpserver']['sources'];
 		
-		$i = 0;
+		$gpsid = 0;
+		$ppsid = 0;
+		$localid = 0;
 		foreach ($source_maps as $sourceent){ 
 			switch ($sourceent['type']) {
 				case "ipaddr":
-					$ntpdconf .= "\nserver " . $sourceent['target'];
-					if (isset($sourceent['minpoll'])) $ntpdconf .= " minpoll " . $sourceent['minpoll'] ;
-					if (isset($sourceent['maxpoll'])) $ntpdconf .= " maxpoll " . $sourceent['maxpoll'] ;
-					if (isset($sourceent['burst'])) $ntpdconf .= " burst" ;
-					if (isset($sourceent['iburst'])) $ntpdconf .= " iburst" ;
+					$ntpdtarget = $sourceent['target'];
 				case "gps":
-					/* symlink gps0 */
+					symlink($sourceent['target'], "/dev/gps" . $gpsid);
+					$ntpdtarget = "127.127.20." . $gpsid;
+					$gpsid++;
+					/* set gps mode and baud http://www.eecis.udel.edu/~mills/ntp/html/drivers/driver20.html*/
 				case "pps":
+					symlink($sourceent['target'], "/dev/pps" . $gpsid);
+					$ntpdtarget = "127.127.22." . $gpsid;
+					$ppsid++;
 				case "local":
+					$ntpdtarget = "127.127.1." . $localid;
+					$localid++;
 			}
+			$ntpconf .= "\nserver " . $ntpdtarget;
+			if (isset($sourceent['minpoll'])) $ntpdconf .= " minpoll " . $sourceent['minpoll'] ;
+			if (isset($sourceent['maxpoll'])) $ntpdconf .= " maxpoll " . $sourceent['maxpoll'] ;
+			if (isset($sourceent['burst'])) $ntpdconf .= " burst" ;
+			if (isset($sourceent['iburst'])) $ntpdconf .= " iburst" ;
+			
+			if (isset($sourceent['offset']) || isset($sourceent['refid']) || isset($sourceent['stratum']) ) {
+				$ntpconf .= "\nfudge " . $ntpdtarget;
+				if (isset($sourceent['offset'])) {
+					if ($sourceent['type'] == "gps") {
+						$ntpdconf .= " time2 " . $sourceent['offset'];
+					} else {
+						$ntpdconf .= " time1 " . $sourceent['offset'];
+					}
+				}
+				if (isset($sourceent['refid'])) {
+					$ntpdconf .= " refid " . $sourceent['refid'];
+				}
+				if (isset($sourceent['stratum'])) {
+					$ntpdconf .= " stratum " . $sourceent['stratum'];
+				}
+			}
+			
 		}
 
 		/* write ntpd.conf */
@@ -521,7 +551,7 @@ function system_ntp_configure() {
 		fclose($fd);
 		
 		/* fire up rtadvd */
-		mwexec("/usr/sbin/ntpd -c {$g['varetc_path']}/ntpd.conf -p {$g['varrun_path']}/ntpd.pid 2>&1 " );
+		mwexec("/usr/sbin/ntpd -N -f {$g['varetc_path']}/ntpd.drift -c {$g['varetc_path']}/ntpd.conf -p {$g['varrun_path']}/ntpd.pid 2>&1 " );
 	}
 		
 	if ($g['booting'])

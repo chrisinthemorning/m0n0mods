@@ -507,10 +507,10 @@ function system_ntp_configure() {
 					symlink($sourceent['target'], "/dev/gps" . $gpsid);
 					$ntpdtarget = "127.127.20." . $gpsid;
 					$gpsid++;
-					/* set gps mode and baud http://www.eecis.udel.edu/~mills/ntp/html/drivers/driver20.html*/
+					/* set gps mode and baud http://www.eecis.udel.edu/~mills/ntp/html/refclock.html*/
 				case "pps":
-					symlink($sourceent['target'], "/dev/pps" . $gpsid);
-					$ntpdtarget = "127.127.22." . $gpsid;
+					symlink($sourceent['target'], "/dev/pps" . $ppsid);
+					$ntpdtarget = "127.127.22." . $ppsid;
 					$ppsid++;
 				case "local":
 					$ntpdtarget = "127.127.1." . $localid;

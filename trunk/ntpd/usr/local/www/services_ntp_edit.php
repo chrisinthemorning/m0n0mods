@@ -132,7 +132,7 @@ if ($_POST) {
                   <td width="22%" valign="top" class="vncellreq">MaxPoll</td>
                   <td width="78%" class="vtable"> 
                     <select name="maxpoll" class="formfld" id="maxpoll">
-                    <?php for ($i = 1; $i <=30; $i++): ?>
+                    <?php for ($i = 5; $i <=30; $i++): ?>
                       <option value="<?=$i;?>" <?php if ($i == $pconfig['maxpoll']) echo "selected"; ?>> 
                       <?=$i;?>
                       </option>
@@ -171,18 +171,18 @@ if ($_POST) {
                   <td width="22%" valign="top" class="vncell">iBurst</td>
                   <td width="78%" class="vtable"> 
                    <input name="iburst" type="checkbox" value="yes" <?php if ($pconfig['enable']) echo "checked"; ?> onClick="enable_change(false)">
-                    <br> <span class="vexpl">When a server is Uneachable send a burst of eight packets.</span></td>
+                    <br> <span class="vexpl">When a server is Unreachable send a burst of eight packets.</span></td>
                 </tr>
 				<tr>
                   <td width="22%" valign="top" class="vncell">Stratum</td>
                   <td width="78%" class="vtable"> 
                     <select name="stratum" class="formfld" id="stratum">
-                    <?php for ($i = 10; $i > 0; $i--): ?>
+                    <?php for ($i = 10; $i >= 0; $i--): ?>
                       <option value="<?=$i;?>" <?php if ($i == $pconfig['stratum']) echo "selected"; ?>> 
                       <?=$i;?>
                       </option>
                       <?php endfor; ?>
-                    </select> <span class="vexpl">Stratum</span></td>
+                    </select> <span class="vexpl">Stratum (default 0).</span></td>
                 </tr>
                 <tr>
                   <td width="22%" valign="top">&nbsp;</td>

@@ -473,6 +473,9 @@ function system_ntp_configure() {
 		foreach (glob("/dev/gps*") as $gpsdev) {
 			unlink($gpsdev);
 		}
+		foreach (glob("/dev/pps*") as $gpsdev) {
+			unlink($gpsdev);
+		}
 
 	}
 

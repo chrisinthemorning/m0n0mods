@@ -253,6 +253,7 @@ local0.*					%/var/log/filter.log
 local3.*					%/var/log/vpn.log
 local4.*					%/var/log/portalauth.log
 local7.*					%/var/log/dhcpd.log
+ntp.*						%/var/log/ntp.log
 *.notice;kern.debug;lpr.info;mail.crit;news.err;daemon.none;local0.none;local3.none;local4.none;local6.none;local7.none %/var/log/system.log
 security.*					%/var/log/system.log
 auth.info;authpriv.info;daemon.info		%/var/log/system.log
@@ -469,6 +470,10 @@ function system_ntp_configure() {
 		killbypid("{$g['varrun_path']}/sntp.pid");
 		killbypid("{$g['varrun_path']}/ntpd.pid");
 		/* unlink symlinks */
+		foreach (glob("/dev/gps*") as $gpsdev) {
+			unlink($gpsdev);
+		}
+
 	}
 
 	if (!isset($config['ntpserver']['enable'])) {
@@ -500,23 +505,28 @@ function system_ntp_configure() {
 		$ppsid = 0;
 		$localid = 0;
 		foreach ($source_maps as $sourceent){ 
+			if (isset($sourceent['type'])) {
 			switch ($sourceent['type']) {
 				case "ipaddr":
 					$ntpdtarget = $sourceent['target'];
+					break;
 				case "gps":
 					symlink($sourceent['target'], "/dev/gps" . $gpsid);
 					$ntpdtarget = "127.127.20." . $gpsid;
 					$gpsid++;
+					break;
 					/* set gps mode and baud http://www.eecis.udel.edu/~mills/ntp/html/refclock.html*/
 				case "pps":
 					symlink($sourceent['target'], "/dev/pps" . $ppsid);
 					$ntpdtarget = "127.127.22." . $ppsid;
 					$ppsid++;
+					break;
 				case "local":
 					$ntpdtarget = "127.127.1." . $localid;
 					$localid++;
+					break;
 			}
-			$ntpconf .= "\nserver " . $ntpdtarget;
+			$ntpdconf .= "\nserver " . $ntpdtarget;
 			if (isset($sourceent['minpoll'])) $ntpdconf .= " minpoll " . $sourceent['minpoll'] ;
 			if (isset($sourceent['maxpoll'])) $ntpdconf .= " maxpoll " . $sourceent['maxpoll'] ;
 			if (isset($sourceent['burst'])) $ntpdconf .= " burst" ;
@@ -538,7 +548,7 @@ function system_ntp_configure() {
 					$ntpdconf .= " stratum " . $sourceent['stratum'];
 				}
 			}
-			
+			}
 		}
 
 		/* write ntpd.conf */

@@ -1,7 +1,7 @@
 #!/usr/local/bin/php
 <?php
 /*
-	$Id: services_dnsmasq.php 366 2010-03-06 11:28:49Z mkasper $
+	$Id: services_ntp.php 366 2010-03-06 11:28:49Z mkasper $
 	part of m0n0wall (http://m0n0.ch/wall)
 	
 	Copyright (C) 2003-2005 Bob Zoller <bob@kludgebox.com> and Manuel Kasper <mk@neon1.net>.

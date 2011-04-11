@@ -535,7 +535,7 @@ function system_ntp_configure() {
 			if (isset($sourceent['burst'])) $ntpdconf .= " burst" ;
 			if (isset($sourceent['iburst'])) $ntpdconf .= " iburst" ;
 			
-			if (isset($sourceent['offset']) || isset($sourceent['refid']) || isset($sourceent['stratum']) ) {
+			if ((isset($sourceent['offset']) || isset($sourceent['refid']) || isset($sourceent['stratum'])) && ($sourceent['type'] != "ipaddr") ) {
 				$ntpconf .= "\nfudge " . $ntpdtarget;
 				if (isset($sourceent['offset'])) {
 					if ($sourceent['type'] == "gps") {
@@ -564,7 +564,7 @@ function system_ntp_configure() {
 		fclose($fd);
 		
 		/* fire up rtadvd */
-		mwexec("/usr/sbin/ntpd -N -f {$g['varetc_path']}/ntpd.drift -c {$g['varetc_path']}/ntpd.conf -p {$g['varrun_path']}/ntpd.pid 2>&1 " );
+		mwexec("/usr/sbin/ntpd -N -g -f {$g['varetc_path']}/ntpd.drift -c {$g['varetc_path']}/ntpd.conf -p {$g['varrun_path']}/ntpd.pid 2>&1 " );
 	}
 		
 	if ($g['booting'])

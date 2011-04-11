@@ -79,7 +79,6 @@ pre {
 	?></pre>
 	</td> 
 	</tr>
-	<tr><td colspan="8" class="list" height="12"></td></tr>
 	<tr><td colspan="2" class="listtopic">Quick Association List</td></tr>
 	<tr> 
 		<td width="22%" class="vncellt">Data</td> 
@@ -92,24 +91,45 @@ pre {
 	?></pre>
 	</td> 
 	</tr>
+	<tr><td colspan="8" class="list" height="12"></td></tr>
 <?php
 		$assocl[0]='00000000000000';
 		foreach($assocl as $assoc){
 			$associd=substr($assoc,4,5);
 			if (is_numeric($associd)){ 
 				?>
-				<tr><td colspan="8" class="list" height="12"></td></tr>
+				
 				<tr><td colspan="2" class="listtopic">Association <?=$associd;?></td></tr>
-				<?php
+				<tr> 
+					<td width="22%" class="vncellt">Data</td>
+					<td width="78%" class="listr"><pre><?php
 				unset($assocds);
 				exec("/usr/bin/ntpq -c 'rv {$associd}'",$assocds);
+				$isgps=false;
 				foreach($assocds as $assocd){
-					?>
-					<tr> 
-					<td width="22%" class="vncellt"></td> 
-					<td width="78%" class="listr"><?=$assocd;?></td> 
-					</tr>
+					if (preg_match("/srcadr=GPS_NMEA/i",$assocd)) {
+						$isgps=true;
+					}
+					echo htmlspecialchars($assocd,ENT_NOQUOTES) . '<hr>';
+				}
+				?></pre>
+				</td> 
+				</tr>
 				<?php
+				unset($clockvarl);
+				if ($isgps) {
+				exec("/usr/bin/ntpq -c 'clockvar {$associd}'",$clockvarl);
+				 ?>
+					<tr> 
+						<td width="22%" class="vncellt">Clock Var</td> 
+						<td width="78%"  class="listr"><pre><?php
+					foreach($clockvarl as $clockvar){
+						echo htmlspecialchars($clockvar,ENT_NOQUOTES) . '<br>';
+					}
+				?></pre>
+				</td> 
+				</tr>
+			<?php
 				}
 			}
 		}

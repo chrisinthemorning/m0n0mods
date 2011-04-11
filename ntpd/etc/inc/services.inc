@@ -245,7 +245,8 @@ EOD;
 $dnscfg
 
 EOD;
-
+		if (isset($config['ntpserver']['enable']))
+			$dhcpdconf .= "		option ntp-servers {$ifcfg['ipaddr']};\n";
 		if ($dhcpifconf['defaultleasetime'])
 			$dhcpdconf .= "	default-lease-time {$dhcpifconf['defaultleasetime']};\n";
 		if ($dhcpifconf['maxleasetime'])
@@ -260,8 +261,6 @@ EOD;
 			$dhcpdconf .= "	next-server {$dhcpifconf['next-server']};\n";
 		if ($dhcpifconf['filename'])
 			$dhcpdconf .= "	filename \"{$dhcpifconf['filename']}\";\n";
-		if (isset($config['ntpserver']['enable']))
-			$dhcpdconf .= " option ntp-servers {$ifcfg['ipaddr']}\";\n";
 		$dhcpdconf .= <<<EOD
 }
 

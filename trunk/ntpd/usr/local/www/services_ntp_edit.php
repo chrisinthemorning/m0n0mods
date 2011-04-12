@@ -43,18 +43,18 @@ if (isset($_POST['id']))
 	
 if (isset($id) && $source_maps[$id]) {
 		$pconfig['type'] = $source_maps[$id]['type'];
-		$pconfig['GPMRC'] = $source_maps[$id]['GPMRC'];
-		$pconfig['GPGGA'] = $source_maps[$id]['GPGGA'];
-		$pconfig['GPGLL'] = $source_maps[$id]['GPGLL'];
-		$pconfig['GPZDA'] = $source_maps[$id]['GPZDA'];
+		$pconfig['gprmc'] = isset($source_maps[$id]['gprmc']);
+		$pconfig['gpgga'] = isset($source_maps[$id]['gpgga']);
+		$pconfig['gpgll'] = isset($source_maps[$id]['gpgll']);
+		$pconfig['gpzda'] = isset($source_maps[$id]['gpzda']);
 		$pconfig['baud'] = $source_maps[$id]['baud'];
 		$pconfig['target'] = $source_maps[$id]['target'];
 		$pconfig['refid'] = $source_maps[$id]['refid'];
 		$pconfig['maxpoll'] = $source_maps[$id]['maxpoll'];
 		$pconfig['minpoll'] = $source_maps[$id]['minpoll'];
 		$pconfig['offset'] = $source_maps[$id]['offset'];
-		$pconfig['burst'] = $source_maps[$id]['burst'];
-		$pconfig['iburst'] = $source_maps[$id]['iburst'];
+		$pconfig['burst'] = isset($source_maps[$id]['burst']);
+		$pconfig['iburst'] = isset($source_maps[$id]['iburst']);
 		$pconfig['stratum'] = $source_maps[$id]['stratum'];
 }
 
@@ -82,10 +82,10 @@ if ($_POST) {
 	if (!$input_errors) {
 		$ntpsource = array();
 		$ntpsource['type'] = $_POST['type'];
-		$ntpsource['GPMRC'] = $_POST['GPMRC'] ? true : false;
-		$ntpsource['GPGGA'] = $_POST['GPGGA'] ? true : false;
-		$ntpsource['GPGLL'] = $_POST['GPGLL'] ? true : false;
-		$ntpsource['GPZDA'] = $_POST['GPZDA'] ? true : false;
+		$ntpsource['gprmc'] = $_POST['gprmc'] ? true : false;
+		$ntpsource['gpgga'] = $_POST['gpgga'] ? true : false;
+		$ntpsource['gpgll'] = $_POST['gpgll'] ? true : false;
+		$ntpsource['gpzda'] = $_POST['gpzda'] ? true : false;
 		$ntpsource['baud'] = $_POST['baud'];
 		$ntpsource['target'] = $_POST['target'];
 		$ntpsource['refid'] = $_POST['refid'];
@@ -139,10 +139,10 @@ if ($_POST) {
                 </tr>
 				<td valign="top" class="vncell">GPS Sentences</td>
                   <td class="vtable">
-                     <input name="GPMRC" type="checkbox" value="yes" <?php if ($pconfig['GPMRC']==true) echo "checked"; ?> onClick="enable_change(false)">GPMRC
-                     <input name="GPGGA" type="checkbox" value="yes" <?php if ($pconfig['GPGGA']) echo "checked"; ?> onClick="enable_change(false)">GPGGA
-                     <input name="GPGLL" type="checkbox" value="yes" <?php if (isset($pconfig['GPGLL'])) echo "checked"; ?> onClick="enable_change(false)">GPGLL
-                     <input name="GPZDA" type="checkbox" value="yes" <?php if ($pconfig['GPZDA']) echo "checked"; ?> onClick="enable_change(false)">GPZDA or GPZDG</td>
+                     <input name="gprmc" type="checkbox" value="yes" <?php if ($pconfig['gprmc']) echo "checked"; ?> onClick="enable_change(false)">GPRMC
+                     <input name="gpgga" type="checkbox" value="yes" <?php if ($pconfig['gpgga']) echo "checked"; ?> onClick="enable_change(false)">GPGGA
+                     <input name="gpgll" type="checkbox" value="yes" <?php if ($pconfig['gpgll']) echo "checked"; ?> onClick="enable_change(false)">GPGLL
+                     <input name="gpzda" type="checkbox" value="yes" <?php if ($pconfig['gpzda']) echo "checked"; ?> onClick="enable_change(false)">GPZDA or GPZDG</td>
                 </tr>
                 <tr>
                   <td width="22%" valign="top" class="vncell">Target</td>

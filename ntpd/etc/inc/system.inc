@@ -517,8 +517,29 @@ function system_ntp_configure() {
 					symlink($sourceent['target'], "/dev/gps" . $gpsid);
 					$ntpdtarget = "127.127.20." . $gpsid;
 					$gpsid++;
-					break;
+					$gpsmode=0;
 					/* set gps mode and baud http://www.eecis.udel.edu/~mills/ntp/html/refclock.html*/
+					if (isset($source_maps[$id]['baud'])) {
+						$gpsmode = $source_maps[$id]['baud'];
+					}
+					if (isset($source_maps[$id]['gprmc'])) {
+						$gpsmode += 1;
+					}
+					if (isset($source_maps[$id]['gpgga'])) {
+						$gpsmode += 2;
+					}
+					if (isset($source_maps[$id]['gpgll'])) {
+						$gpsmode += 4;
+					}
+					if (isset($source_maps[$id]['gpzda'])) {
+						$gpsmode += 8;
+					}
+					if ($gpsmode > 0) {
+						$ntpdtarget .= " mode " . $gpsmode;
+					}
+					
+					$gpsid++;
+					break;
 				case "pps":
 					symlink($sourceent['target'], "/dev/pps" . $ppsid);
 					$ntpdtarget = "127.127.22." . $ppsid;

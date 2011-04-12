@@ -42,6 +42,12 @@ if (isset($_POST['id']))
 	$id = $_POST['id'];
 	
 if (isset($id) && $source_maps[$id]) {
+		$pconfig['type'] = $source_maps[$id]['type'];
+		$pconfig['GPMRC'] = $source_maps[$id]['GPMRC'];
+		$pconfig['GPGGA'] = $source_maps[$id]['GPGGA'];
+		$pconfig['GPGLL'] = $source_maps[$id]['GPGLL'];
+		$pconfig['GPZDA'] = $source_maps[$id]['GPZDA'];
+		$pconfig['baud'] = $source_maps[$id]['baud'];
 		$pconfig['target'] = $source_maps[$id]['target'];
 		$pconfig['refid'] = $source_maps[$id]['refid'];
 		$pconfig['maxpoll'] = $source_maps[$id]['maxpoll'];
@@ -76,6 +82,11 @@ if ($_POST) {
 	if (!$input_errors) {
 		$ntpsource = array();
 		$ntpsource['type'] = $_POST['type'];
+		$ntpsource['GPMRC'] = $_POST['GPMRC'] ? true : false;
+		$ntpsource['GPGGA'] = $_POST['GPGGA'] ? true : false;
+		$ntpsource['GPGLL'] = $_POST['GPGLL'] ? true : false;
+		$ntpsource['GPZDA'] = $_POST['GPZDA'] ? true : false;
+		$ntpsource['baud'] = $_POST['baud'];
 		$ntpsource['target'] = $_POST['target'];
 		$ntpsource['refid'] = $_POST['refid'];
 		$ntpsource['maxpoll'] = $_POST['maxpoll'];
@@ -113,6 +124,26 @@ if ($_POST) {
 						?>
                     </select></td>
                 </tr>
+				<tr> 
+                  <td valign="top" class="vncell">GPS Baud</td>
+                  <td class="vtable"> 
+                    <select name="baud" class="formfld" id="baud" onchange="enable_change(false)">
+                      <?php $opts = array('0' => '4800', '16' => '9600', '32' => '19200', '48' => '38400', '64' => '57600', '80' => '115200');
+						foreach ($opts as $optn => $optd) {
+							echo "<option value=\"$optn\"";
+							if ($optn == $pconfig['baud']) echo "selected";
+							echo ">$optd</option>\n";
+						}
+						?>
+                    </select></td>
+                </tr>
+				<td valign="top" class="vncell">GPS Sentences</td>
+                  <td class="vtable">
+                     <input name="GPMRC" type="checkbox" value="yes" <?php if ($pconfig['GPMRC']==true) echo "checked"; ?> onClick="enable_change(false)">GPMRC
+                     <input name="GPGGA" type="checkbox" value="yes" <?php if ($pconfig['GPGGA']) echo "checked"; ?> onClick="enable_change(false)">GPGGA
+                     <input name="GPGLL" type="checkbox" value="yes" <?php if (isset($pconfig['GPGLL'])) echo "checked"; ?> onClick="enable_change(false)">GPGLL
+                     <input name="GPZDA" type="checkbox" value="yes" <?php if ($pconfig['GPZDA']) echo "checked"; ?> onClick="enable_change(false)">GPZDA or GPZDG</td>
+                </tr>
                 <tr>
                   <td width="22%" valign="top" class="vncell">Target</td>
                   <td width="78%" class="vtable"> 
@@ -122,14 +153,14 @@ if ($_POST) {
                     e.g. <em>/dev/ttyU0</em></span></td>
                 </tr>
 				<tr>
-                  <td width="22%" valign="top" class="vncellreq">Reference ID</td>
+                  <td width="22%" valign="top" class="vncell">Reference ID</td>
                   <td width="78%" class="vtable"> 
                     <?=$mandfldhtml;?><input name="refid" type="text" class="formfld" id="refid" size="40" value="<?=htmlspecialchars($pconfig['refid']);?>">
                     <br> <span class="vexpl">This is the RefID that peers will see<br>
                     e.g. <em>GPS0</em></span></td>
                 </tr>
 				<tr>
-                  <td width="22%" valign="top" class="vncellreq">MaxPoll</td>
+                  <td width="22%" valign="top" class="vncell">MaxPoll</td>
                   <td width="78%" class="vtable"> 
                     <select name="maxpoll" class="formfld" id="maxpoll">
                     <?php for ($i = 5; $i <=30; $i++): ?>
@@ -164,20 +195,20 @@ if ($_POST) {
 				<tr>
                   <td width="22%" valign="top" class="vncell">Burst</td>
                   <td width="78%" class="vtable"> 
-                  <input name="burst" type="checkbox" value="yes" <?php if ($pconfig['enable']) echo "checked"; ?> onClick="enable_change(false)">
+                  <input name="burst" type="checkbox" value="yes" <?php if ($pconfig['burst']) echo "checked"; ?> onClick="enable_change(false)">
                     <br> <span class="vexpl">When a server is Reachable send a burst of eight packets.</span></td>
                 </tr>
 				<tr>
                   <td width="22%" valign="top" class="vncell">iBurst</td>
                   <td width="78%" class="vtable"> 
-                   <input name="iburst" type="checkbox" value="yes" <?php if ($pconfig['enable']) echo "checked"; ?> onClick="enable_change(false)">
+                   <input name="iburst" type="checkbox" value="yes" <?php if ($pconfig['iburst']) echo "checked"; ?> onClick="enable_change(false)">
                     <br> <span class="vexpl">When a server is Unreachable send a burst of eight packets.</span></td>
                 </tr>
 				<tr>
                   <td width="22%" valign="top" class="vncell">Stratum</td>
                   <td width="78%" class="vtable"> 
                     <select name="stratum" class="formfld" id="stratum">
-                    <?php for ($i = 10; $i >= 0; $i--): ?>
+                    <?php for ($i = 15; $i >= 0; $i--): ?>
                       <option value="<?=$i;?>" <?php if ($i == $pconfig['stratum']) echo "selected"; ?>> 
                       <?=$i;?>
                       </option>

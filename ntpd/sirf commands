@@ -1,0 +1,32 @@
+/tmp/ser2net -C '2007:raw:5:/dev/ttyU3:4800' -u
+
+Turn off GGA
+echo -e -n "\$PSRF103,0,0,0,1*24\r\n"  > /dev/ttyU3
+
+"$PSRF103,1,0,0,1*25\r\n" /** Disables GPGLL */
+echo -e -n"\$PSRF103,2,0,0,1*26\r\n" /** Disables GPGSA */
+echo -e -n "\$PSRF103,3,0,0,1*27\r\n"  > /dev/ttyU3 /** Disables GPGSV */
+"$PSRF103,5,0,0,1*21\r\n" /** Disables GPVTG */
+
+// GGA-Global Positioning System Fixed Data, message 103,00
+#define LOG_GGA 0
+#define GGA_ON   "$PSRF103,00,00,01,01*25\r\n"
+#define GGA_OFF  "$PSRF103,00,00,00,01*24\r\n"
+
+// GLL-Geographic Position-Latitude/Longitude, message 103,01
+#define LOG_GLL 0
+#define GLL_ON   "$PSRF103,01,00,01,01*26\r\n"
+#define GLL_OFF  "$PSRF103,01,00,00,01*27\r\n"
+
+// GSA-GNSS DOP and Active Satellites, message 103,02
+#define LOG_GSA 0
+#define GSA_ON   "$PSRF103,02,00,01,01*27\r\n"
+#define GSA_OFF  "$PSRF103,02,00,00,01*26\r\n"
+
+// GSV-GNSS Satellites in View, message 103,03
+#define LOG_GSV 0
+#define GSV_ON   "$PSRF103,03,00,01,01*26\r\n"
+#define GSV_OFF  "$PSRF103,03,00,00,01*27\r\n"
+
+#define RMC_ON   "$PSRF103,04,00,01,01*21\r\n"
+#define RMC_OFF  "$PSRF103,04,00,00,01*20\r\n"

@@ -560,7 +560,7 @@ function system_ntp_configure() {
 				$ntpdconf .= "\nfudge " . $ntpdtarget;
 				if (isset($sourceent['offset'])) {
 					if ($sourceent['type'] == "gps") {
-						$ntpdconf .= " time2 " . $sourceent['offset'];
+						$ntpdconf .= " time1 " . $sourceent['offset'];
 					} else {
 						$ntpdconf .= " time1 " . $sourceent['offset'];
 					}

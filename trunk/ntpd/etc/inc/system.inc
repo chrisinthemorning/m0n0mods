@@ -34,6 +34,7 @@
 /* include all configuration functions */
 require_once("functions.inc");
 	
+	
 function system_resolvconf_generate($dynupdate = false) {
 	global $config, $g;
 	

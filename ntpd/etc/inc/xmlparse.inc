@@ -29,6 +29,7 @@
 	POSSIBILITY OF SUCH DAMAGE.
 */
 
+
 /* tags that are always to be handled as lists */
 $listtags = explode(" ", "rule rule6 user group key dnsserver winsserver pages " .
 	"encryption-algorithm-option hash-algorithm-option hosts tunnel onetoone " .

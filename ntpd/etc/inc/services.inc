@@ -31,6 +31,7 @@
 /* include all configuration functions */
 require_once("functions.inc");
 
+
 function services_dhcp6s_configure() {
 	global $config, $g;
 	
